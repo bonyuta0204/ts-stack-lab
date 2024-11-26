@@ -1,0 +1,5 @@
+packages:
+  - "client"  # Frontend
+  - "server"  # Backend
+  - "shared"  # Shared code (optional)
+
