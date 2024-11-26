@@ -1,0 +1,15 @@
+services:
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306" # map MySQL port 3306 to localhost
+    environment:
+      MYSQL_ROOT_PASSWORD: test # replace with your root password
+      MYSQL_DATABASE: app  # replace with your development database name
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+    driver: local
+
