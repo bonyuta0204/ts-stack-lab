@@ -39,7 +39,7 @@ export async function getUsers(
       },
     });
     res.json(users);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to fetch users" });
   }
 }
@@ -67,14 +67,14 @@ export async function getUser(
     }
 
     res.json(user);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to fetch user" });
   }
 }
 
 // Create user
 export async function createUser(
-  req: Request<{}, {}, CreateUserRequest>,
+  req: Request<void, UserResponse, CreateUserRequest>,
   res: Response<UserResponse | ErrorResponse>
 ) {
   try {
@@ -108,14 +108,14 @@ export async function createUser(
     });
 
     res.status(201).json(user);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to create user" });
   }
 }
 
 // Update user
 export async function updateUser(
-  req: Request<{ id: string }, {}, UpdateUserRequest>,
+  req: Request<{ id: string }, UserResponse, UpdateUserRequest>,
   res: Response<UserResponse | ErrorResponse>
 ) {
   try {
@@ -138,7 +138,7 @@ export async function updateUser(
     });
 
     res.json(user);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to update user" });
   }
 }
@@ -156,7 +156,7 @@ export async function deleteUser(
     });
 
     res.status(204).send();
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to delete user" });
   }
 }

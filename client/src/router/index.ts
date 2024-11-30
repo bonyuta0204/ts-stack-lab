@@ -7,19 +7,19 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/users'
+      redirect: '/users',
     },
     {
       path: '/users',
       name: 'users',
-      component: UserList
+      component: UserList,
     },
     {
       path: '/users/new',
       name: 'users-new',
-      component: UserNew
-    }
-  ]
+      component: UserNew,
+    },
+  ],
 })
 
 export default router
