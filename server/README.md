@@ -50,6 +50,16 @@ pnpm dev
 
 The server will start at http://localhost:3000.
 
+## API Documentation
+
+The API documentation is available through Swagger UI when the server is running. You can access it at:
+
+```
+http://localhost:3000/api-docs
+```
+
+The OpenAPI specification is maintained in `/api-docs/openapi.yaml` at the root of the project. As new endpoints are added or modified, the OpenAPI specification should be updated to reflect these changes.
+
 ## API Endpoints
 
 ### Users
