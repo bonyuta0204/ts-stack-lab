@@ -2,12 +2,15 @@ openapi: 3.0.0
 info:
   title: TS Stack Lab API
   version: 1.0.0
-  description: API documentation for the TS Stack Lab project
+  description: |
+    API documentation for the TS Stack Lab project.
+    This API provides endpoints for managing users in the system.
+
 servers:
   - url: http://localhost:3000
     description: Local development server
+
 paths:
-  # Your API endpoints will be documented here
   /api:
     get:
       summary: API Status
@@ -24,13 +27,211 @@ paths:
                     type: string
                     example: "ok"
 
+  /api/users:
+    get:
+      summary: Get all users
+      description: Retrieve a list of all users in the system
+      tags:
+        - Users
+      responses:
+        '200':
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      summary: Create a new user
+      description: Create a new user in the system
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: User ID
+    
+    get:
+      summary: Get a user by ID
+      description: Retrieve a specific user by their ID
+      tags:
+        - Users
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    put:
+      summary: Update a user
+      description: Update an existing user's information
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      summary: Delete a user
+      description: Delete a user from the system
+      tags:
+        - Users
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   schemas:
-    # Your data models will be defined here
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user
+        email:
+          type: string
+          format: email
+          description: User's email address
+        name:
+          type: string
+          description: User's full name
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the user was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the user was last updated
+      required:
+        - id
+        - email
+        - name
+        - createdAt
+        - updatedAt
+
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        name:
+          type: string
+          description: User's full name
+        password:
+          type: string
+          format: password
+          description: User's password (will be hashed)
+      required:
+        - email
+        - name
+        - password
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        name:
+          type: string
+          description: User's full name
+      minProperties: 1
+
     Error:
       type: object
       properties:
-        code:
+        error:
           type: string
-        message:
-          type: string
+          description: Error message
+      required:
+        - error
