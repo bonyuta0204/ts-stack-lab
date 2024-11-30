@@ -1,0 +1,36 @@
+openapi: 3.0.0
+info:
+  title: TS Stack Lab API
+  version: 1.0.0
+  description: API documentation for the TS Stack Lab project
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+paths:
+  # Your API endpoints will be documented here
+  /api:
+    get:
+      summary: API Status
+      description: Returns the API status
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+components:
+  schemas:
+    # Your data models will be defined here
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string

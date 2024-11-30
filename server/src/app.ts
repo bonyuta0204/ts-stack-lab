@@ -1,12 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes';
+import { setupSwagger } from './swagger';
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Setup Swagger UI
+setupSwagger(app);
 
 // Routes
 app.use('/api/users', userRoutes);
