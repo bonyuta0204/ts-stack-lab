@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import { hash } from 'bcrypt';
+import { PrismaClient } from "@prisma/client";
+import { faker } from "@faker-js/faker";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Start seeding...');
+  console.log("Start seeding...");
 
   // Create 100 users
   const users = [];
@@ -13,7 +13,7 @@ async function main() {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
     const email = faker.internet.email({ firstName, lastName });
-    const password = await hash('password123', 10); // Using a common password for all test users
+    const password = await hash("password123", 10); // Using a common password for all test users
 
     const user = await prisma.user.create({
       data: {
@@ -26,11 +26,14 @@ async function main() {
           },
         },
         posts: {
-          create: Array.from({ length: faker.number.int({ min: 0, max: 5 }) }, () => ({
-            title: faker.lorem.sentence(),
-            content: faker.lorem.paragraphs(),
-            published: faker.datatype.boolean(),
-          })),
+          create: Array.from(
+            { length: faker.number.int({ min: 0, max: 5 }) },
+            () => ({
+              title: faker.lorem.sentence(),
+              content: faker.lorem.paragraphs(),
+              published: faker.datatype.boolean(),
+            })
+          ),
         },
       },
     });
@@ -38,7 +41,7 @@ async function main() {
     console.log(`Created user ${i + 1}/100: ${user.email}`);
   }
 
-  console.log('Seeding finished');
+  console.log("Seeding finished");
 }
 
 main()
@@ -46,6 +49,8 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(async () => {
-    await prisma.$disconnect();
+  .finally(() => {
+    prisma.$disconnect().catch((e) => {
+      console.error(e);
+    });
   });

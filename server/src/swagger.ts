@@ -7,7 +7,7 @@ export const setupSwagger = (app: Express) => {
   // Load OpenAPI spec from the api-docs directory (one level up from server)
   const swaggerDocument = YAML.load(
     path.join(__dirname, "../../api-docs/openapi.yaml")
-  );
+  ) as object;
 
   // Serve Swagger UI at /api-docs endpoint
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
