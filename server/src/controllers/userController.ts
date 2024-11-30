@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { PrismaClient, User } from "@prisma/client";
 import { hash } from "bcrypt";
 
@@ -45,10 +45,10 @@ export async function getUsers(
 }
 
 // Get single user
-export async function getUser(
-  req: Request<{ id: string }>,
+export const getUser: RequestHandler = async (
+  req: Request,
   res: Response<UserResponse | ErrorResponse>
-) {
+) => {
   try {
     const { id } = req.params;
     const user = await prisma.user.findUnique({
@@ -63,20 +63,20 @@ export async function getUser(
     });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "User not found" });
+    } else {
+      res.json(user);
     }
-
-    res.json(user);
   } catch {
     res.status(500).json({ error: "Failed to fetch user" });
   }
-}
+};
 
 // Create user
-export async function createUser(
-  req: Request<void, UserResponse, CreateUserRequest>,
+export const createUser: RequestHandler = async (
+  req: Request<object, UserResponse, CreateUserRequest>,
   res: Response<UserResponse | ErrorResponse>
-) {
+) => {
   try {
     const { email, name, password } = req.body;
 
@@ -86,7 +86,8 @@ export async function createUser(
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      res.status(400).json({ error: "User already exists" });
+      return;
     }
 
     // Hash password
@@ -111,7 +112,7 @@ export async function createUser(
   } catch {
     res.status(500).json({ error: "Failed to create user" });
   }
-}
+};
 
 // Update user
 export async function updateUser(

@@ -33,7 +33,10 @@ jobs:
     - name: Type check client
       run: pnpm --filter client run type-check
 
-    - name: Lint server
+    - name: Generate Prisma Client
+      run: pnpm --filter server run prisma:generate
+
+    - name: lint server
       run: pnpm --filter server run lint
 
     - name: Type check server
