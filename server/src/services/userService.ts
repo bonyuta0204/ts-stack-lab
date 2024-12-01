@@ -7,7 +7,6 @@ import {
   writeUsersToCache,
 } from "./cacheService.js";
 import { ILogger } from "../config/logger.js";
-import { write } from "fs";
 
 const prisma = new PrismaClient();
 
