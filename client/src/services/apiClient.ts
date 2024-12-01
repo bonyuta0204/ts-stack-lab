@@ -1,77 +1,48 @@
-import { auth } from '../config/firebase';
+import axios, { AxiosInstance } from 'axios'
+import { auth } from '../config/firebase'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
 
 class ApiClient {
-  private async getHeaders(): Promise<Headers> {
-    const headers = new Headers({
-      'Content-Type': 'application/json',
-    });
+  private axios: AxiosInstance
 
-    const user = auth.currentUser;
-    if (user) {
-      const token = await user.getIdToken();
-      headers.append('Authorization', `Bearer ${token}`);
-    }
+  constructor() {
+    this.axios = axios.create({
+      baseURL: API_BASE_URL,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
-    return headers;
+    // Add request interceptor to add auth token
+    this.axios.interceptors.request.use(async (config) => {
+      const user = auth.currentUser
+      if (user) {
+        const token = await user.getIdToken()
+        config.headers.Authorization = `Bearer ${token}`
+      }
+      return config
+    })
   }
 
-  async get<T>(endpoint: string): Promise<T> {
-    const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
+  async get<T, D = unknown>(endpoint: string, config?: axios.AxiosRequestConfig<D>) {
+    const response = await this.axios.get<T>(endpoint, config)
+    return response.data
   }
 
-  async post<T>(endpoint: string, data: any): Promise<T> {
-    const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
+  async post<T, D = unknown>(endpoint: string, data: D, config?: axios.AxiosRequestConfig<D>) {
+    const response = await this.axios.post<T>(endpoint, data, config)
+    return response.data
   }
 
-  async put<T>(endpoint: string, data: any): Promise<T> {
-    const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
+  async put<T, D = unknown>(endpoint: string, data: D, config?: axios.AxiosRequestConfig<D>) {
+    const response = await this.axios.put<T>(endpoint, data, config)
+    return response.data
   }
 
-  async delete(endpoint: string): Promise<void> {
-    const headers = await this.getHeaders();
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'DELETE',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+  async delete<T, D = unknown>(endpoint: string, config?: axios.AxiosRequestConfig<D>) {
+    await this.axios.delete<T>(endpoint, config)
   }
 }
 
-export const apiClient = new ApiClient();
+export const apiClient = new ApiClient()
