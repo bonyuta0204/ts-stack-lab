@@ -1,10 +1,8 @@
 import { Request, RequestHandler, Response } from "express";
 import { PrismaClient, User } from "@prisma/client";
 import { hash } from "bcrypt";
-import RedisClient from "@redis/client/dist/lib/client";
-import { redisClient } from "../config/redisClient";
 import { readUserFromCache, writeUserToCache } from "../services/cacheService";
-import { write } from "fs";
+import logger from "../config/logger";
 
 const prisma = new PrismaClient();
 
@@ -40,6 +38,7 @@ export async function getUsers(
   req: Request,
   res: Response<PaginatedResponse<UserResponse> | ErrorResponse>
 ) {
+  logger.info("Getting users list", { query: req.query });
   try {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 50;
@@ -101,9 +100,9 @@ export async function getUsers(
       pageSize,
       totalPages,
     });
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Failed to fetch users" });
+  } catch {
+    logger.error("Error getting users list");
+    res.status(500).json({ error: "Failed to get users" });
   }
 }
 
@@ -112,11 +111,11 @@ export const getUser: RequestHandler = async (
   req: Request,
   res: Response<UserResponse | ErrorResponse>
 ) => {
+  const userId = req.params.id;
+  logger.info("Getting user by ID", { userId });
   try {
-    const { id } = req.params;
-
     const user = await prisma.user.findUnique({
-      where: { id: Number(id) },
+      where: { id: Number(userId) },
       select: {
         id: true,
         email: true,
@@ -131,8 +130,9 @@ export const getUser: RequestHandler = async (
     } else {
       res.json(user);
     }
-  } catch {
-    res.status(500).json({ error: "Failed to fetch user" });
+  } catch (error) {
+    logger.error("Error getting user", { userId, error });
+    res.status(500).json({ error: "Failed to get user" });
   }
 };
 
@@ -141,6 +141,7 @@ export const createUser: RequestHandler = async (
   req: Request<object, UserResponse, CreateUserRequest>,
   res: Response<UserResponse | ErrorResponse>
 ) => {
+  logger.info("Creating new user", { email: req.body.email });
   try {
     const { email, name, password } = req.body;
 
@@ -173,7 +174,8 @@ export const createUser: RequestHandler = async (
     });
 
     res.status(201).json(user);
-  } catch {
+  } catch (error) {
+    logger.error("Error creating user", { email: req.body.email, error });
     res.status(500).json({ error: "Failed to create user" });
   }
 };
@@ -183,12 +185,13 @@ export async function updateUser(
   req: Request<{ id: string }, UserResponse, UpdateUserRequest>,
   res: Response<UserResponse | ErrorResponse>
 ) {
+  const userId = req.params.id;
+  logger.info("Updating user", { userId, updates: req.body });
   try {
-    const { id } = req.params;
     const { email, name } = req.body;
 
     const user = await prisma.user.update({
-      where: { id: Number(id) },
+      where: { id: Number(userId) },
       data: {
         ...(email && { email }),
         ...(name && { name }),
@@ -203,7 +206,8 @@ export async function updateUser(
     });
 
     res.json(user);
-  } catch {
+  } catch (error) {
+    logger.error("Error updating user", { userId, error });
     res.status(500).json({ error: "Failed to update user" });
   }
 }
@@ -213,15 +217,16 @@ export async function deleteUser(
   req: Request<{ id: string }>,
   res: Response<void | ErrorResponse>
 ) {
+  const userId = req.params.id;
+  logger.info("Deleting user", { userId });
   try {
-    const { id } = req.params;
-
     await prisma.user.delete({
-      where: { id: Number(id) },
+      where: { id: Number(userId) },
     });
 
     res.status(204).send();
-  } catch {
+  } catch (error) {
+    logger.error("Error deleting user", { userId, error });
     res.status(500).json({ error: "Failed to delete user" });
   }
 }

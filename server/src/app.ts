@@ -2,12 +2,13 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
 import { setupSwagger } from "./swagger";
-
+import { httpLogging } from "./middleware/logger";
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(httpLogging);
 
 // Setup Swagger UI
 setupSwagger(app);
