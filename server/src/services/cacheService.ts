@@ -1,6 +1,9 @@
 import { User } from "@prisma/client";
 import { redisClient } from "../config/redisClient";
 
+// Constants
+const KEY_PREFIX = "app:";
+
 /**
  * Generate a consistent Redis key with prefix.
  * @param key - The base key to be prefixed
@@ -10,8 +13,6 @@ const generateKey = <T extends string>(key: T): `${typeof KEY_PREFIX}${T}` => {
   return `${KEY_PREFIX}${key}`;
 };
 
-// Constants
-const KEY_PREFIX = "app:";
 const usersKey = generateKey("users");
 const userCountKey = generateKey("userCount");
 
