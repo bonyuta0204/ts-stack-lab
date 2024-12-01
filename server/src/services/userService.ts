@@ -1,6 +1,6 @@
 import { PrismaClient, User } from "@prisma/client";
 import { hash } from "bcrypt";
-import { readUserFromCache, writeUserToCache } from "./cacheService";
+import { readUsersFromCache, writeUsersToCache } from "./cacheService";
 import { ILogger } from "../config/logger";
 
 const prisma = new PrismaClient();
@@ -30,11 +30,11 @@ export class UserService {
   async getUsers(
     page: number = 1,
     pageSize: number = 50,
-    logger: ILogger = console,
+    logger: ILogger = console
   ): Promise<PaginatedResponse<UserResponse>> {
     const skip = (page - 1) * pageSize;
 
-    const cachedUsers = await readUserFromCache(skip, skip + pageSize - 1);
+    const cachedUsers = await readUsersFromCache(skip, skip + pageSize - 1);
     if (cachedUsers) {
       logger.info("Fetched users from cache");
       return {
@@ -61,7 +61,7 @@ export class UserService {
     });
 
     logger.info("Writing users list to cache");
-    await writeUserToCache(allUsers);
+    await writeUsersToCache(allUsers);
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -94,7 +94,7 @@ export class UserService {
 
   async getUser(
     id: number,
-    logger: ILogger = console,
+    logger: ILogger = console
   ): Promise<UserResponse | null> {
     logger.info("Getting user by id", { id });
     return prisma.user.findUnique({
@@ -111,7 +111,7 @@ export class UserService {
 
   async createUser(
     data: CreateUserData,
-    logger: ILogger = console,
+    logger: ILogger = console
   ): Promise<UserResponse> {
     logger.info("Creating new user", { email: data.email });
     const hashedPassword = await hash(data.password, 10);
@@ -134,7 +134,7 @@ export class UserService {
   async updateUser(
     id: number,
     data: UpdateUserData,
-    logger: ILogger = console,
+    logger: ILogger = console
   ): Promise<UserResponse> {
     logger.info("Updating user", { id });
     return prisma.user.update({
