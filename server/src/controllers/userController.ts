@@ -33,14 +33,15 @@ export async function getUsers(
 export async function getUser(
   req: Request,
   res: Response<UserResponse | ErrorResponse>
-) {
+): Promise<void> {
   const { id } = req.params;
   req.logger.info("Getting user", { id });
 
   try {
     const user = await userService.getUser(Number(id), req.logger);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "User not found" });
+      return;
     }
     res.json(user);
   } catch (error) {
