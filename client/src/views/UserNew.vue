@@ -23,6 +23,15 @@
           required
         />
       </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input
+          id="password"
+          v-model="form.password"
+          type="password"
+          required
+        />
+      </div>
       <div class="actions">
         <router-link
           to="/users"
@@ -52,6 +61,7 @@
   const form = reactive({
     name: '',
     email: '',
+    password: '',
   })
 
   const { mutate } = useMutation({
