@@ -7,17 +7,18 @@ import {
   followUser,
   unfollowUser,
 } from "../controllers/tweetController";
+import { asyncHandler } from "../middleware/errorHandler";
 
 const router = Router();
 
 // Tweet routes
-router.get("/", getTweets);
-router.get("/timeline/:userId", getTimeline);
-router.get("/user/:userId", getUserTweets);
-router.post("/", createTweet);
+router.get("/", asyncHandler(getTweets));
+router.get("/timeline/:userId", asyncHandler(getTimeline));
+router.get("/user/:userId", asyncHandler(getUserTweets));
+router.post("/", asyncHandler(createTweet));
 
 // Follow routes
-router.post("/follow", followUser);
-router.post("/unfollow", unfollowUser);
+router.post("/follow", asyncHandler(followUser));
+router.post("/unfollow", asyncHandler(unfollowUser));
 
 export default router;

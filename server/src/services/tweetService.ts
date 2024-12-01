@@ -22,7 +22,7 @@ class TweetService {
   async getTweets(
     page: number = 1,
     pageSize: number = 50,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<PaginatedResponse<TweetResponse>> {
     logger.info("Getting tweets list", { page, pageSize });
 
@@ -60,7 +60,7 @@ class TweetService {
     userId: number,
     page: number = 1,
     pageSize: number = 50,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<PaginatedResponse<TweetResponse>> {
     logger.info("Getting user timeline", { userId, page, pageSize });
 
@@ -119,7 +119,7 @@ class TweetService {
     userId: number,
     page: number = 1,
     pageSize: number = 50,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<PaginatedResponse<TweetResponse>> {
     logger.info("Getting user tweets", { userId, page, pageSize });
 
@@ -158,7 +158,7 @@ class TweetService {
 
   async createTweet(
     data: CreateTweetData,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<TweetResponse> {
     logger.info("Creating tweet", { data });
 
@@ -181,7 +181,7 @@ class TweetService {
   async followUser(
     followerId: number,
     followingId: number,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<Follow> {
     logger.info("Following user", { followerId, followingId });
 
@@ -198,7 +198,7 @@ class TweetService {
   async unfollowUser(
     followerId: number,
     followingId: number,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<void> {
     logger.info("Unfollowing user", { followerId, followingId });
 

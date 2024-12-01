@@ -62,7 +62,7 @@ export class HttpLogger implements ILogger {
 export const httpLogging = (
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) => {
   const { method, url } = req;
 

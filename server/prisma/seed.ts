@@ -32,7 +32,7 @@ async function main() {
               title: faker.lorem.sentence(),
               content: faker.lorem.paragraphs(),
               published: faker.datatype.boolean(),
-            })
+            }),
           ),
         },
       },

@@ -30,7 +30,7 @@ export class UserService {
   async getUsers(
     page: number = 1,
     pageSize: number = 50,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<PaginatedResponse<UserResponse>> {
     const skip = (page - 1) * pageSize;
 
@@ -94,7 +94,7 @@ export class UserService {
 
   async getUser(
     id: number,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse | null> {
     logger.info("Getting user by id", { id });
     return prisma.user.findUnique({
@@ -111,7 +111,7 @@ export class UserService {
 
   async createUser(
     data: CreateUserData,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse> {
     logger.info("Creating new user", { email: data.email });
     const hashedPassword = await hash(data.password, 10);
@@ -134,7 +134,7 @@ export class UserService {
   async updateUser(
     id: number,
     data: UpdateUserData,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse> {
     logger.info("Updating user", { id });
     return prisma.user.update({
