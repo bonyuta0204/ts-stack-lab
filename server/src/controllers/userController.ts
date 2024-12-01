@@ -19,6 +19,14 @@ interface UpdateUserRequest {
 // Types for responses
 type UserResponse = Omit<User, "password">;
 
+interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 type ErrorResponse = {
   error: string;
 };
@@ -26,20 +34,42 @@ type ErrorResponse = {
 // Get all users
 export async function getUsers(
   req: Request,
-  res: Response<UserResponse[] | ErrorResponse>
+  res: Response<PaginatedResponse<UserResponse> | ErrorResponse>
 ) {
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 50;
+    const skip = (page - 1) * pageSize;
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        skip,
+        take: pageSize,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          id: "asc",
+        },
+      }),
+      prisma.user.count(),
+    ]);
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    res.json({
+      items: users,
+      total,
+      page,
+      pageSize,
+      totalPages,
     });
-    res.json(users);
-  } catch {
+  } catch (error) {
+    console.error("Error fetching users:", error);
     res.status(500).json({ error: "Failed to fetch users" });
   }
 }
