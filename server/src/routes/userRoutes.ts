@@ -7,22 +7,17 @@ import {
   deleteUser,
 } from "../controllers/userController.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
+import { authenticateUser } from "../middleware/auth.js";
 
 const router = Router();
 
-// Get all users
-router.get("/", asyncHandler(getUsers));
+// Public routes
+router.post("/", asyncHandler(createUser)); // Keep user creation public for non-Firebase registration
 
-// Get single user
-router.get("/:id", asyncHandler(getUser));
-
-// Create user
-router.post("/", asyncHandler(createUser));
-
-// Update user
-router.put("/:id", asyncHandler(updateUser));
-
-// Delete user
-router.delete("/:id", asyncHandler(deleteUser));
+// Protected routes
+router.get("/", authenticateUser, asyncHandler(getUsers));
+router.get("/:id", authenticateUser, asyncHandler(getUser));
+router.put("/:id", authenticateUser, asyncHandler(updateUser));
+router.delete("/:id", authenticateUser, asyncHandler(deleteUser));
 
 export default router;
