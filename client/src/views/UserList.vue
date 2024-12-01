@@ -8,6 +8,8 @@
       >
         New User
       </router-link>
+
+      <button @click="onClickLoadMore">Load More</button>
     </div>
     <div class="users-container">
       <div
@@ -46,20 +48,35 @@
 </template>
 
 <script setup lang="ts">
-  import { useQuery } from '@tanstack/vue-query'
+  import { useInfiniteQuery } from '@tanstack/vue-query'
   import { getUsers } from '../services/api'
   import { computed } from 'vue'
 
   const {
     data: userResponse,
+    fetchNextPage,
     isLoading,
     error,
-  } = useQuery({
+  } = useInfiniteQuery({
     queryKey: ['users'],
-    queryFn: () => getUsers({ page: 1, pageSize: 50 }),
+    queryFn: fetchUsers,
+    initialPageParam: 1,
+    getNextPageParam: (_, pages) => {
+      return pages.length + 1
+    },
   })
 
-  const users = computed(() => userResponse.value?.items)
+  function fetchUsers({ pageParam = 1 }) {
+    return getUsers({ page: pageParam, pageSize: 50 })
+  }
+
+  function onClickLoadMore() {
+    fetchNextPage().catch((error) => {
+      console.error('Error loading more users:', error)
+    })
+  }
+
+  const users = computed(() => userResponse.value?.pages.flatMap((page) => page.items) || [])
 </script>
 
 <style scoped>
