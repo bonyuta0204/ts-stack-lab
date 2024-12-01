@@ -36,7 +36,7 @@ export class UserService {
   async getUsers(
     page: number = 1,
     pageSize: number = 50,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<PaginatedResponse<UserResponse>> {
     const skip = (page - 1) * pageSize;
 
@@ -103,7 +103,7 @@ export class UserService {
 
   async getUser(
     id: number,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse | null> {
     logger.info("Getting user by id", { id });
     return prisma.user.findUnique({
@@ -120,7 +120,7 @@ export class UserService {
 
   async createUser(
     data: CreateUserData,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse> {
     logger.info("Creating new user");
 
@@ -170,7 +170,7 @@ export class UserService {
     firebaseUid: string,
     email: string,
     name: string,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse> {
     logger.info("Finding or creating Firebase user");
 
@@ -214,13 +214,13 @@ export class UserService {
         name,
         firebaseUid,
       },
-      logger
+      logger,
     );
   }
 
   async getUserByFirebaseUid(
     firebaseUid: string,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse | null> {
     logger.info("Getting user by Firebase UID");
 
@@ -242,7 +242,7 @@ export class UserService {
   async updateUser(
     id: number,
     data: UpdateUserData,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse> {
     logger.info("Updating user", { id });
     return prisma.user.update({

@@ -12,7 +12,7 @@
           v-model="form.name"
           type="text"
           required
-        >
+        />
       </div>
       <div class="form-group">
         <label for="email">Email:</label>
@@ -21,7 +21,7 @@
           v-model="form.email"
           type="email"
           required
-        >
+        />
       </div>
       <div class="form-group">
         <label for="password">Password:</label>
@@ -30,7 +30,7 @@
           v-model="form.password"
           type="password"
           required
-        >
+        />
       </div>
       <div class="actions">
         <router-link

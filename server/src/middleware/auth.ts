@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 export const authenticateUser: RequestHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const authHeader = req.headers.authorization;

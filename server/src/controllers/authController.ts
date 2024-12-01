@@ -5,7 +5,7 @@ import { User } from "@prisma/client";
 
 export const handleFirebaseAuth: RequestHandler = async (
   req: Request<unknown, User, { idToken: string }>,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { idToken } = req.body;
@@ -22,7 +22,7 @@ export const handleFirebaseAuth: RequestHandler = async (
     const user = await userService.findOrCreateFirebaseUser(
       decodedToken.uid,
       decodedToken.email || "",
-      decodedToken.name as string
+      decodedToken.name as string,
     );
 
     res.status(200).json({ user });

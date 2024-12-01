@@ -9,9 +9,7 @@
         New User
       </router-link>
 
-      <button @click="onClickLoadMore">
-        Load More
-      </button>
+      <button @click="onClickLoadMore">Load More</button>
     </div>
     <div class="users-container">
       <div

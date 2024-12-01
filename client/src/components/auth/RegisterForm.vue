@@ -10,7 +10,7 @@
           type="text"
           required
           class="form-control"
-        >
+        />
       </div>
       <div class="form-group">
         <label for="email">Email</label>
@@ -20,7 +20,7 @@
           type="email"
           required
           class="form-control"
-        >
+        />
       </div>
       <div class="form-group">
         <label for="password">Password</label>
@@ -30,7 +30,7 @@
           type="password"
           required
           class="form-control"
-        >
+        />
       </div>
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
@@ -40,7 +40,7 @@
           type="password"
           required
           class="form-control"
-        >
+        />
       </div>
       <div
         v-if="error"

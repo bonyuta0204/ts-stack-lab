@@ -10,7 +10,7 @@ export const errorHandler: ErrorRequestHandler = (
   err: Error,
   req: Request,
   res: Response<ErrorResponse>,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   req.logger.error(err);
 
@@ -41,13 +41,13 @@ export const asyncHandler = <
   fn: (
     req: Request<P, ResBody, ReqBody, ReqQuery>,
     res: Response<ResBody>,
-    next: NextFunction
-  ) => Promise<unknown>
+    next: NextFunction,
+  ) => Promise<unknown>,
 ) => {
   return async (
     req: Request<P, ResBody, ReqBody, ReqQuery>,
     res: Response<ResBody>,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       await fn(req, res, next);
