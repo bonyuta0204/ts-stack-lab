@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api'
+  baseURL: 'http://localhost:3000/api',
 })
 
 export interface User {
@@ -23,12 +23,19 @@ export interface PaginationParams {
   pageSize: number
 }
 
+type CreateUserParams = Omit<User, 'id'>
+
 export const getUsers = async (params: PaginationParams): Promise<PaginatedResponse<User>> => {
   const { data } = await api.get<PaginatedResponse<User>>('/users', {
     params: {
       page: params.page,
-      pageSize: params.pageSize
-    }
+      pageSize: params.pageSize,
+    },
   })
+  return data
+}
+
+export const createUser = async (user: CreateUserParams): Promise<User> => {
+  const { data } = await api.post<User>('/users', user)
   return data
 }

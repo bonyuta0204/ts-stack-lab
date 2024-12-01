@@ -12,7 +12,7 @@
           v-model="form.name"
           type="text"
           required
-        >
+        />
       </div>
       <div class="form-group">
         <label for="email">Email:</label>
@@ -21,7 +21,7 @@
           v-model="form.email"
           type="email"
           required
-        >
+        />
       </div>
       <div class="actions">
         <router-link
@@ -42,20 +42,30 @@
 </template>
 
 <script setup lang="ts">
+  import { useMutation, useQueryClient } from '@tanstack/vue-query'
   import { reactive } from 'vue'
   import { useRouter } from 'vue-router'
+  import { createUser } from '../services/api'
 
   const router = useRouter()
+  const queryClient = useQueryClient()
   const form = reactive({
     name: '',
     email: '',
   })
 
+  const { mutate } = useMutation({
+    mutationFn: () => {
+      return createUser(form).catch(() => {})
+    },
+    onSuccess: () => {
+      router.push({ name: 'users' }).catch(() => {})
+      queryClient.invalidateQueries({ queryKey: ['users'] }).catch(() => {})
+    },
+  })
+
   const handleSubmit = () => {
-    // Implementation for user creation will be added here
-    console.log('Form submitted:', form)
-    // After successful creation, redirect to user list
-    router.push('/users').catch(() => {})
+    mutate()
   }
 </script>
 

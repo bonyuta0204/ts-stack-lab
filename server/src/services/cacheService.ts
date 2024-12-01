@@ -71,3 +71,16 @@ export const deleteUserFromCache = async (userId: string): Promise<void> => {
     console.error(`Failed to delete cache for key: ${key}`, error);
   }
 };
+
+/**
+ * Delete all user data from cache.
+ */
+export const resetUsersCache = async (): Promise<void> => {
+  const key = usersKey;
+  try {
+    await redisClient.del(key);
+    console.log(`Cache deleted for key: ${key}`);
+  } catch (error) {
+    console.error(`Failed to delete cache for key: ${key}`, error);
+  }
+};

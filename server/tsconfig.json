@@ -12,6 +12,7 @@
   },
   "include": [
     "src/**/*",
+    "scripts/**/*.ts",
     "prisma/**/*.ts",
     "@types/**/*"
   ]
