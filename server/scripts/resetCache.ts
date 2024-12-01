@@ -2,8 +2,10 @@ import { exit } from "process";
 import {
   resetUsersCache,
   resetUserCountCache,
-} from "../src/services/cacheService";
-import { redisClient } from "../src/config/redisClient";
+} from "../src/services/cacheService.js";
+import { redisClient } from "../src/config/redisClient.js";
+
+await redisClient.connect();
 
 /**
  * Script to reset all cache entries in Redis.

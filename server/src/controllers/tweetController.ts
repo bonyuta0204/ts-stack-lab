@@ -4,7 +4,7 @@ import {
   TweetResponse,
   PaginatedResponse,
   CreateTweetData,
-} from "../services/tweetService";
+} from "../services/tweetService.js";
 import { Follow } from "@prisma/client";
 
 // Get all tweets

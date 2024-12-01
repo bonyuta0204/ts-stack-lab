@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { redisClient } from "../config/redisClient";
+import { redisClient } from "../config/redisClient.js";
 
 // Constants
 const KEY_PREFIX = "app:";

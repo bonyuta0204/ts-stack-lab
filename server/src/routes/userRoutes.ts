@@ -5,8 +5,8 @@ import {
   createUser,
   updateUser,
   deleteUser,
-} from "../controllers/userController";
-import { asyncHandler } from "../middleware/errorHandler";
+} from "../controllers/userController.js";
+import { asyncHandler } from "../middleware/errorHandler.js";
 
 const router = Router();
 

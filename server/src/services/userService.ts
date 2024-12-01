@@ -1,7 +1,7 @@
 import { PrismaClient, User } from "@prisma/client";
 import { hash } from "bcrypt";
-import { readUsersFromCache, writeUsersToCache } from "./cacheService";
-import { ILogger } from "../config/logger";
+import { readUsersFromCache, writeUsersToCache } from "./cacheService.js";
+import { ILogger } from "../config/logger.js";
 
 const prisma = new PrismaClient();
 

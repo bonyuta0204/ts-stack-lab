@@ -1,7 +1,7 @@
-import express from "express";
-import logger from "../config/logger";
+import logger from "../config/logger.js";
 import winston from "winston";
-import { ILogger } from "../config/logger";
+import { ILogger } from "../config/logger.js";
+import { Request, Response, NextFunction } from "express";
 
 export class HttpLogger implements ILogger {
   private logger: winston.Logger;
@@ -60,9 +60,9 @@ export class HttpLogger implements ILogger {
 }
 
 export const httpLogging = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
   const { method, url } = req;
 

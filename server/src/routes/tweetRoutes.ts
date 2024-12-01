@@ -6,8 +6,8 @@ import {
   createTweet,
   followUser,
   unfollowUser,
-} from "../controllers/tweetController";
-import { asyncHandler } from "../middleware/errorHandler";
+} from "../controllers/tweetController.js";
+import { asyncHandler } from "../middleware/errorHandler.js";
 
 const router = Router();
 
