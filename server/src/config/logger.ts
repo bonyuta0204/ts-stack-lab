@@ -17,4 +17,12 @@ const logger = createLogger({
   ],
 });
 
+export type ILogger = {
+  error(message: string, ...args: unknown[]): unknown;
+  warn(message: string, ...args: unknown[]): unknown;
+  info(message: string, ...args: unknown[]): unknown;
+  debug(message: string, ...args: unknown[]): unknown;
+  trace(message: string, ...args: unknown[]): unknown;
+};
+
 export default logger;

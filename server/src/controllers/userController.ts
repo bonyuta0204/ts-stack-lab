@@ -1,33 +1,11 @@
-import { Request, RequestHandler, Response } from "express";
-import { PrismaClient, User } from "@prisma/client";
-import { hash } from "bcrypt";
-import { readUserFromCache, writeUserToCache } from "../services/cacheService";
-import logger from "../config/logger";
-
-const prisma = new PrismaClient();
-
-// Types for request bodies
-interface CreateUserRequest {
-  email: string;
-  name: string;
-  password: string;
-}
-
-interface UpdateUserRequest {
-  email?: string;
-  name?: string;
-}
-
-// Types for responses
-type UserResponse = Omit<User, "password">;
-
-interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
+import { Request, Response } from "express";
+import {
+  userService,
+  UserResponse,
+  PaginatedResponse,
+  CreateUserData,
+  UpdateUserData,
+} from "../services/userService";
 
 type ErrorResponse = {
   error: string;
@@ -42,173 +20,70 @@ export async function getUsers(
   try {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 50;
-    const skip = (page - 1) * pageSize;
 
-    const cachedUsers = await readUserFromCache(skip, skip + pageSize - 1);
-    if (cachedUsers) {
-      console.log("Fetched users from cache");
-      res.json({
-        items: cachedUsers,
-        total: cachedUsers.length,
-        page,
-        pageSize,
-        totalPages: 1,
-      });
-      req.logger.info("Fetched users list from cache ");
-      return;
-    }
-
-    // Fetch users from the database and add it to cache
-    const allUsers = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: {
-        id: "asc",
-      },
-    });
-
-    await writeUserToCache(allUsers);
-
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        skip,
-        take: pageSize,
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-        orderBy: {
-          id: "asc",
-        },
-      }),
-      prisma.user.count(),
-    ]);
-
-    const totalPages = Math.ceil(total / pageSize);
-
-    res.json({
-      items: users,
-      total,
-      page,
-      pageSize,
-      totalPages,
-    });
-  } catch {
-    logger.error("Error getting users list");
+    const result = await userService.getUsers(page, pageSize, req.logger);
+    res.json(result);
+  } catch (error) {
+    req.logger.error("Error getting users", { error });
     res.status(500).json({ error: "Failed to get users" });
   }
 }
 
 // Get single user
-export const getUser: RequestHandler = async (
+export async function getUser(
   req: Request,
   res: Response<UserResponse | ErrorResponse>
-) => {
-  const userId = req.params.id;
-  req.logger.info("Getting user by ID", { userId });
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: Number(userId) },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+) {
+  const { id } = req.params;
+  req.logger.info("Getting user", { id });
 
+  try {
+    const user = await userService.getUser(Number(id), req.logger);
     if (!user) {
-      res.status(404).json({ error: "User not found" });
-    } else {
-      res.json(user);
+      return res.status(404).json({ error: "User not found" });
     }
+    res.json(user);
   } catch (error) {
-    logger.error("Error getting user", { userId, error });
+    req.logger.error("Error getting user", { error });
     res.status(500).json({ error: "Failed to get user" });
   }
-};
+}
 
 // Create user
-export const createUser: RequestHandler = async (
-  req: Request<object, UserResponse, CreateUserRequest>,
+export async function createUser(
+  req: Request<object, UserResponse, CreateUserData>,
   res: Response<UserResponse | ErrorResponse>
-) => {
-  req.logger.info("Creating new user", { email: req.body.email });
+) {
+  const userData = req.body;
+  req.logger.info("Creating user", { email: userData.email });
+
   try {
-    const { email, name, password } = req.body;
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      res.status(400).json({ error: "User already exists" });
-      return;
-    }
-
-    // Hash password
-    const hashedPassword = await hash(password, 10);
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-
+    const user = await userService.createUser(userData, req.logger);
     res.status(201).json(user);
   } catch (error) {
-    logger.error("Error creating user", { email: req.body.email, error });
+    req.logger.error("Error creating user", { error });
     res.status(500).json({ error: "Failed to create user" });
   }
-};
+}
 
 // Update user
 export async function updateUser(
-  req: Request<{ id: string }, UserResponse, UpdateUserRequest>,
+  req: Request<{ id: string }, UserResponse, UpdateUserData>,
   res: Response<UserResponse | ErrorResponse>
 ) {
-  const userId = req.params.id;
-  req.logger.info("Updating user", { userId, updates: req.body });
+  const { id } = req.params;
+  const updateData = req.body;
+  req.logger.info("Updating user", { id });
+
   try {
-    const { email, name } = req.body;
-
-    const user = await prisma.user.update({
-      where: { id: Number(userId) },
-      data: {
-        ...(email && { email }),
-        ...(name && { name }),
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-
+    const user = await userService.updateUser(
+      Number(id),
+      updateData,
+      req.logger
+    );
     res.json(user);
   } catch (error) {
-    logger.error("Error updating user", { userId, error });
+    req.logger.error("Error updating user", { error });
     res.status(500).json({ error: "Failed to update user" });
   }
 }
@@ -218,16 +93,14 @@ export async function deleteUser(
   req: Request<{ id: string }>,
   res: Response<void | ErrorResponse>
 ) {
-  const userId = req.params.id;
-  req.logger.info("Deleting user", { userId });
-  try {
-    await prisma.user.delete({
-      where: { id: Number(userId) },
-    });
+  const { id } = req.params;
+  req.logger.info("Deleting user", { id });
 
+  try {
+    await userService.deleteUser(Number(id), req.logger);
     res.status(204).send();
   } catch (error) {
-    logger.error("Error deleting user", { userId, error });
+    req.logger.error("Error deleting user", { error });
     res.status(500).json({ error: "Failed to delete user" });
   }
 }

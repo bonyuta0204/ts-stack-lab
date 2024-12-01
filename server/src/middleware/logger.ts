@@ -1,8 +1,9 @@
 import express from "express";
 import logger from "../config/logger";
 import winston from "winston";
+import { ILogger } from "../config/logger";
 
-export class HttpLogger {
+export class HttpLogger implements ILogger {
   private logger: winston.Logger;
   private startTime: number;
   private method: string;
@@ -15,7 +16,7 @@ export class HttpLogger {
     this.startTime = 0; // Initialize startTime to avoid undefined issues
   }
 
-  prefix() {
+  private prefix() {
     return `[${this.method} ${this.path}]`;
   }
 
@@ -28,8 +29,28 @@ export class HttpLogger {
   }
 
   info(message: string, meta?: Record<string, unknown>) {
-    const duration = Date.now() - this.startTime;
+    const duration = this.duration();
     this.logger.info(`${this.prefix()} ${message}`, { duration, ...meta });
+  }
+
+  error(message: string, meta?: Record<string, unknown>) {
+    const duration = this.duration();
+    this.logger.error(`${this.prefix()} ${message}`, { duration, ...meta });
+  }
+
+  warn(message: string, meta?: Record<string, unknown>) {
+    const duration = this.duration();
+    this.logger.warn(`${this.prefix()} ${message}`, { duration, ...meta });
+  }
+
+  debug(message: string, meta?: Record<string, unknown>) {
+    const duration = this.duration();
+    this.logger.debug(`${this.prefix()} ${message}`, { duration, ...meta });
+  }
+
+  trace(message: string, meta?: Record<string, unknown>) {
+    const duration = this.duration();
+    this.logger.debug(`${this.prefix()} ${message}`, { duration, ...meta });
   }
 }
 
