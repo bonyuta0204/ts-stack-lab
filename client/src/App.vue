@@ -1,10 +1,12 @@
 <script setup lang="ts">
   const title = 'TS Stack Lab'
+  import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 </script>
 
 <template>
   <p>{{ title }}</p>
   <router-view />
+  <vue-query-devtools />
 </template>
 
 <style>
