@@ -1,6 +1,10 @@
-import { type Request, type Response, type NextFunction } from 'express';
-import { getFirebaseAuth } from '../config/firebase';
-import { prisma } from '../lib/prisma';
+import {
+  type Request,
+  type Response,
+  type NextFunction,
+  RequestHandler,
+} from "express";
+import { getFirebaseAuth } from "../config/firebase.js";
 
 declare global {
   namespace Express {
@@ -14,18 +18,23 @@ declare global {
   }
 }
 
-export const authenticateUser = async (
+import { PrismaClient, User } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export const authenticateUser: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
+    if (!authHeader?.startsWith("Bearer ")) {
+      res.status(401).json({ error: "No token provided" });
+      return;
     }
 
-    const token = authHeader.split('Bearer ')[1];
+    const token = authHeader.split("Bearer ")[1];
     const decodedToken = await getFirebaseAuth().verifyIdToken(token);
 
     // Find or create user in our database
@@ -34,7 +43,8 @@ export const authenticateUser = async (
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'User not found' });
+      res.status(401).json({ error: "User not found" });
+      return;
     }
 
     // Attach user to request object
@@ -46,7 +56,8 @@ export const authenticateUser = async (
 
     next();
   } catch (error) {
-    console.error('Authentication error:', error);
-    return res.status(401).json({ error: 'Invalid token' });
+    console.error("Authentication error:", error);
+    res.status(401).json({ error: "Invalid token" });
+    return;
   }
 };

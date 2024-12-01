@@ -67,7 +67,7 @@ export const readUserCountFromCache = async (): Promise<number | null> => {
  * @param users - Array of users to cache
  */
 export const writeUsersToCache = async (
-  users: Omit<User, "password">[]
+  users: Omit<User, "password" | "firebaseUid">[]
 ): Promise<void> => {
   const key = usersKey;
 

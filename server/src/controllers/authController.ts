@@ -1,32 +1,35 @@
-import { type Request, type Response } from 'express';
-import { userService } from '../services/userService';
-import { getFirebaseAuth } from '../config/firebase';
+import { RequestHandler, type Request, type Response } from "express";
+import { userService } from "../services/userService.js";
+import { getFirebaseAuth } from "../config/firebase.js";
+import { User } from "@prisma/client";
 
-export class AuthController {
-  async handleFirebaseAuth(req: Request, res: Response) {
-    try {
-      const { idToken } = req.body;
+export const handleFirebaseAuth: RequestHandler = async (
+  req: Request<unknown, User, { idToken: string }>,
+  res: Response
+) => {
+  try {
+    const { idToken } = req.body;
 
-      if (!idToken) {
-        return res.status(400).json({ error: 'ID token is required' });
-      }
-
-      // Verify the Firebase ID token
-      const decodedToken = await getFirebaseAuth().verifyIdToken(idToken);
-      
-      // Find or create user in our database
-      const user = await userService.findOrCreateFirebaseUser(
-        decodedToken.uid,
-        decodedToken.email || '',
-        decodedToken.name || decodedToken.email?.split('@')[0] || 'Anonymous User'
-      );
-
-      return res.status(200).json({ user });
-    } catch (error) {
-      console.error('Firebase authentication error:', error);
-      return res.status(401).json({ error: 'Authentication failed' });
+    if (!idToken) {
+      res.status(400).json({ error: "ID token is required" });
+      return;
     }
-  }
-}
 
-export const authController = new AuthController();
+    // Verify the Firebase ID token
+    const decodedToken = await getFirebaseAuth().verifyIdToken(idToken);
+
+    // Find or create user in our database
+    const user = await userService.findOrCreateFirebaseUser(
+      decodedToken.uid,
+      decodedToken.email || "",
+      decodedToken.name as string
+    );
+
+    res.status(200).json({ user });
+    return;
+  } catch (error) {
+    console.error("Firebase authentication error:", error);
+    res.status(401).json({ error: "Authentication failed" });
+    return;
+  }
+};

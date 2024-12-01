@@ -7,11 +7,10 @@ import {
   writeUsersToCache,
 } from "./cacheService.js";
 import { ILogger } from "../config/logger.js";
-import { getFirebaseAuth } from "../config/firebase.js";
 
 const prisma = new PrismaClient();
 
-export type UserResponse = Omit<User, "password">;
+export type UserResponse = Omit<User, "password" | "firebaseUid">;
 
 export interface PaginatedResponse<T> {
   items: T[];
@@ -209,11 +208,14 @@ export class UserService {
     }
 
     // Create new user
-    return await this.createUser({
-      email,
-      name,
-      firebaseUid,
-    }, logger);
+    return await this.createUser(
+      {
+        email,
+        name,
+        firebaseUid,
+      },
+      logger
+    );
   }
 
   async getUserByFirebaseUid(
