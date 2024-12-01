@@ -6,19 +6,7 @@ import {
 } from "express";
 import { getFirebaseAuth } from "../config/firebase.js";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        email: string;
-        firebaseUid: string;
-      };
-    }
-  }
-}
-
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
