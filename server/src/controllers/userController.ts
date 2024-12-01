@@ -38,7 +38,7 @@ export async function getUsers(
   req: Request,
   res: Response<PaginatedResponse<UserResponse> | ErrorResponse>
 ) {
-  logger.info("Getting users list", { query: req.query });
+  req.logger.info("Getting users list", { query: req.query });
   try {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 50;
@@ -54,6 +54,7 @@ export async function getUsers(
         pageSize,
         totalPages: 1,
       });
+      req.logger.info("Fetched users list from cache ");
       return;
     }
 
@@ -112,7 +113,7 @@ export const getUser: RequestHandler = async (
   res: Response<UserResponse | ErrorResponse>
 ) => {
   const userId = req.params.id;
-  logger.info("Getting user by ID", { userId });
+  req.logger.info("Getting user by ID", { userId });
   try {
     const user = await prisma.user.findUnique({
       where: { id: Number(userId) },
@@ -141,7 +142,7 @@ export const createUser: RequestHandler = async (
   req: Request<object, UserResponse, CreateUserRequest>,
   res: Response<UserResponse | ErrorResponse>
 ) => {
-  logger.info("Creating new user", { email: req.body.email });
+  req.logger.info("Creating new user", { email: req.body.email });
   try {
     const { email, name, password } = req.body;
 
@@ -186,7 +187,7 @@ export async function updateUser(
   res: Response<UserResponse | ErrorResponse>
 ) {
   const userId = req.params.id;
-  logger.info("Updating user", { userId, updates: req.body });
+  req.logger.info("Updating user", { userId, updates: req.body });
   try {
     const { email, name } = req.body;
 
@@ -218,7 +219,7 @@ export async function deleteUser(
   res: Response<void | ErrorResponse>
 ) {
   const userId = req.params.id;
-  logger.info("Deleting user", { userId });
+  req.logger.info("Deleting user", { userId });
   try {
     await prisma.user.delete({
       where: { id: Number(userId) },
