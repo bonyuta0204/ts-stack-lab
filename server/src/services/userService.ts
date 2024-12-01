@@ -1,7 +1,13 @@
 import { PrismaClient, User } from "@prisma/client";
 import { hash } from "bcrypt";
-import { readUsersFromCache, writeUsersToCache } from "./cacheService.js";
+import {
+  readUserCountFromCache,
+  readUsersFromCache,
+  writeUserCountToCache,
+  writeUsersToCache,
+} from "./cacheService.js";
 import { ILogger } from "../config/logger.js";
+import { write } from "fs";
 
 const prisma = new PrismaClient();
 
@@ -34,15 +40,18 @@ export class UserService {
   ): Promise<PaginatedResponse<UserResponse>> {
     const skip = (page - 1) * pageSize;
 
-    const cachedUsers = await readUsersFromCache(skip, skip + pageSize - 1);
-    if (cachedUsers) {
+    const [cachedUsers, cachedUserCount] = await Promise.all([
+      readUsersFromCache(skip, skip + pageSize - 1),
+      readUserCountFromCache(),
+    ]);
+    if (cachedUsers && cachedUserCount) {
       logger.info("Fetched users from cache");
       return {
         items: cachedUsers,
-        total: cachedUsers.length,
+        total: cachedUserCount,
         page,
         pageSize,
-        totalPages: 1,
+        totalPages: Math.ceil(cachedUserCount / pageSize), // cachedUserCount / pageSize,
       };
     }
 
@@ -116,7 +125,7 @@ export class UserService {
     logger.info("Creating new user", { email: data.email });
     const hashedPassword = await hash(data.password, 10);
 
-    return prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         ...data,
         password: hashedPassword,
@@ -129,6 +138,17 @@ export class UserService {
         updatedAt: true,
       },
     });
+
+    /**
+     * update cache
+     */
+    const userCount = await prisma.user.count();
+    await Promise.all([
+      writeUsersToCache([user]),
+      writeUserCountToCache(userCount),
+    ]);
+
+    return user;
   }
 
   async updateUser(
