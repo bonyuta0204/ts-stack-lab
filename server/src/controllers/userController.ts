@@ -1,6 +1,10 @@
 import { Request, RequestHandler, Response } from "express";
 import { PrismaClient, User } from "@prisma/client";
 import { hash } from "bcrypt";
+import RedisClient from "@redis/client/dist/lib/client";
+import { redisClient } from "../config/redisClient";
+import { readUserFromCache, writeUserToCache } from "../services/cacheService";
+import { write } from "fs";
 
 const prisma = new PrismaClient();
 
@@ -40,6 +44,35 @@ export async function getUsers(
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 50;
     const skip = (page - 1) * pageSize;
+
+    const cachedUsers = await readUserFromCache(skip, skip + pageSize - 1);
+    if (cachedUsers) {
+      console.log("Fetched users from cache");
+      res.json({
+        items: cachedUsers,
+        total: cachedUsers.length,
+        page,
+        pageSize,
+        totalPages: 1,
+      });
+      return;
+    }
+
+    // Fetch users from the database and add it to cache
+    const allUsers = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    await writeUserToCache(allUsers);
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -81,6 +114,7 @@ export const getUser: RequestHandler = async (
 ) => {
   try {
     const { id } = req.params;
+
     const user = await prisma.user.findUnique({
       where: { id: Number(id) },
       select: {
