@@ -16,7 +16,10 @@
         </button>
       </div>
 
-      <Transition name="fade" mode="out-in">
+      <Transition
+        name="fade"
+        mode="out-in"
+      >
         <LoginForm v-if="currentView === 'login'" />
         <RegisterForm v-else />
       </Transition>

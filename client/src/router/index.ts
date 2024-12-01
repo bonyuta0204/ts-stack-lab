@@ -12,34 +12,34 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: TimelineView,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true },
     },
     {
       path: '/auth',
       name: 'auth',
       component: AuthLayout,
-      meta: { guest: true }
+      meta: { guest: true },
     },
     {
       path: '/users',
       name: 'users',
       component: UserList,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true },
     },
     {
       path: '/users/new',
       name: 'users-new',
       component: UserNew,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true },
     },
   ],
 })
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const currentUser = authService.getCurrentUser()
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const isGuestRoute = to.matched.some(record => record.meta.guest)
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+  const isGuestRoute = to.matched.some((record) => record.meta.guest)
 
   if (requiresAuth && !currentUser) {
     next('/auth')

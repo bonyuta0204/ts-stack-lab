@@ -5,32 +5,41 @@
       <div class="form-group">
         <label for="email">Email</label>
         <input
-          type="email"
           id="email"
           v-model="email"
+          type="email"
           required
           class="form-control"
-        />
+        >
       </div>
       <div class="form-group">
         <label for="password">Password</label>
         <input
-          type="password"
           id="password"
           v-model="password"
+          type="password"
           required
           class="form-control"
-        />
+        >
       </div>
-      <div class="error" v-if="error">{{ error }}</div>
-      <button type="submit" class="btn btn-primary" :disabled="loading">
+      <div
+        v-if="error"
+        class="error"
+      >
+        {{ error }}
+      </div>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        :disabled="loading"
+      >
         {{ loading ? 'Logging in...' : 'Login' }}
       </button>
       <button
         type="button"
         class="btn btn-google"
-        @click="handleGoogleLogin"
         :disabled="loading"
+        @click="handleGoogleLogin"
       >
         Login with Google
       </button>

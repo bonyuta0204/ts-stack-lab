@@ -6,6 +6,7 @@ import {
   type User as FirebaseUser,
   GoogleAuthProvider,
   signInWithPopup,
+  NextOrObserver,
 } from 'firebase/auth'
 import { auth } from '../config/firebase'
 
@@ -32,7 +33,7 @@ class AuthService {
     return this.authenticateWithServer(idToken)
   }
 
-  async register(email: string, password: string, name: string): Promise<User> {
+  async register(email: string, password: string): Promise<User> {
     const credential = await createUserWithEmailAndPassword(auth, email, password)
     const idToken = await credential.user.getIdToken()
     return this.authenticateWithServer(idToken)
@@ -47,21 +48,28 @@ class AuthService {
     return this.currentUser
   }
 
-  onAuthStateChange(callback: (user: User | null) => void): () => void {
-    return onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
-        try {
+  onAuthStateChange(callback: (user: User | null) => void) {
+    const observer: NextOrObserver<FirebaseUser> = (firebaseUser) => {
+      const handleAuthStateChange = async () => {
+        if (firebaseUser) {
           const idToken = await firebaseUser.getIdToken()
-          const user = await this.authenticateWithServer(idToken)
-          callback(user)
-        } catch (error) {
-          console.error('Error authenticating with server:', error)
+          try {
+            const user = await this.authenticateWithServer(idToken)
+            callback(user)
+          } catch (error) {
+            console.error('Error authenticating with server:', error)
+            callback(null)
+          }
+        } else {
           callback(null)
         }
-      } else {
-        callback(null)
       }
-    })
+
+      // 非同期処理を明示的に呼び出す
+      void handleAuthStateChange()
+    }
+
+    return onAuthStateChanged(auth, observer)
   }
 
   private async authenticateWithServer(idToken: string): Promise<User> {

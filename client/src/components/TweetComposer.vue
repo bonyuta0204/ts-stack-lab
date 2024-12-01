@@ -38,7 +38,7 @@
       :disabled="isSubmitting"
       @keydown.ctrl.enter="handleSubmit"
       @keydown.meta.enter="handleSubmit"
-    ></textarea>
+    />
     <div class="composer-footer">
       <span
         class="char-count"
@@ -48,8 +48,8 @@
       </span>
       <button
         class="tweet-button"
-        @click="handleSubmit"
         :disabled="isSubmitting || !content.trim() || content.length > 280"
+        @click="handleSubmit"
       >
         Tweet
       </button>

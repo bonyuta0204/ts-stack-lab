@@ -5,8 +5,18 @@
 <template>
   <div class="app-container">
     <nav class="nav-bar">
-      <router-link to="/" class="nav-item">Home</router-link>
-      <router-link to="/users" class="nav-item">Users</router-link>
+      <router-link
+        to="/"
+        class="nav-item"
+      >
+        Home
+      </router-link>
+      <router-link
+        to="/users"
+        class="nav-item"
+      >
+        Users
+      </router-link>
     </nav>
     
     <main class="main-content">

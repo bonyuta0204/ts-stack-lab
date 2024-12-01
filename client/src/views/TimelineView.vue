@@ -33,12 +33,18 @@ function loadMore() {
 
     <TweetComposer />
 
-    <div v-if="isLoading && !timeline" class="loading">
-      <div class="loading-spinner"></div>
+    <div
+      v-if="isLoading && !timeline"
+      class="loading"
+    >
+      <div class="loading-spinner" />
       Loading tweets...
     </div>
 
-    <div v-else-if="error" class="error">
+    <div
+      v-else-if="error"
+      class="error"
+    >
       Failed to load tweets. Please try again later.
     </div>
 
@@ -49,13 +55,22 @@ function loadMore() {
         :tweet="tweet"
       />
 
-      <div v-if="timeline.page < timeline.totalPages" class="load-more">
-        <button @click="loadMore" :disabled="isLoading">
+      <div
+        v-if="timeline.page < timeline.totalPages"
+        class="load-more"
+      >
+        <button
+          :disabled="isLoading"
+          @click="loadMore"
+        >
           {{ isLoading ? 'Loading...' : 'Load more' }}
         </button>
       </div>
 
-      <div v-else-if="timeline.items.length === 0" class="empty-state">
+      <div
+        v-else-if="timeline.items.length === 0"
+        class="empty-state"
+      >
         No tweets yet. Follow some users to see their tweets here!
       </div>
     </template>
