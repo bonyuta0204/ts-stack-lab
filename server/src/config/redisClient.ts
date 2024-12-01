@@ -8,6 +8,4 @@ redisClient.on("error", (err) => {
   console.error("Redis Client Error:", err);
 });
 
-redisClient.connect().catch((err) => {
-  console.error("Redis Client Connection Error:", err);
-});
+await redisClient.connect();

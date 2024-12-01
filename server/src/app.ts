@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
-import userRoutes from "./routes/userRoutes";
-import tweetRoutes from "./routes/tweetRoutes";
-import { setupSwagger } from "./swagger";
-import { httpLogging } from "./middleware/logger";
-import { errorHandler } from "./middleware/errorHandler";
+import userRoutes from "./routes/userRoutes.js";
+import tweetRoutes from "./routes/tweetRoutes.js";
+import { setupSwagger } from "./swagger.js";
+import { httpLogging } from "./middleware/logger.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 

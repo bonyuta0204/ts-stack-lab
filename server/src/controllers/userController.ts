@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { userService } from "../services/userService";
 import {
   PaginatedResponse,
   UserResponse,
   CreateUserData,
   UpdateUserData,
-} from "../services/userService";
-import { ErrorResponse } from "../middleware/errorHandler";
+  userService,
+} from "../services/userService.js";
+import { ErrorResponse } from "../middleware/errorHandler.js";
 
 export const getUsers = async (
   req: Request,

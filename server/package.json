@@ -4,18 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "ts-node prisma/seed.ts",
+    "seed": "tsx prisma/seed.ts",
     "prisma:generate": "prisma generate",
     "lint": "eslint . --fix",
-    "reset-cache": "ts-node scripts/resetCache.ts",
+    "reset-cache": "tsx scripts/resetCache.ts",
     "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
+  "type": "module",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "5.22.0",
@@ -30,7 +31,6 @@
     "express": "^4.21.1",
     "prisma": "^5.22.0",
     "swagger-ui-express": "^5.0.1",
-    "tsx": "^4.19.2",
     "winston": "^3.17.0",
     "yamljs": "^0.3.0"
   },
@@ -39,8 +39,8 @@
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
-    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.2",
     "typescript": "~5.6.3"
   },
   "volta": {
