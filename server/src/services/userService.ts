@@ -10,7 +10,7 @@ import { ILogger } from "../config/logger.js";
 
 const prisma = new PrismaClient();
 
-export type UserResponse = Omit<User, "password">;
+export type UserResponse = Omit<User, "password" | "firebaseUid">;
 
 export interface PaginatedResponse<T> {
   items: T[];
@@ -23,7 +23,8 @@ export interface PaginatedResponse<T> {
 export interface CreateUserData {
   email: string;
   name: string;
-  password: string;
+  password?: string;
+  firebaseUid?: string;
 }
 
 export interface UpdateUserData {
@@ -35,7 +36,7 @@ export class UserService {
   async getUsers(
     page: number = 1,
     pageSize: number = 50,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<PaginatedResponse<UserResponse>> {
     const skip = (page - 1) * pageSize;
 
@@ -102,7 +103,7 @@ export class UserService {
 
   async getUser(
     id: number,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse | null> {
     logger.info("Getting user by id", { id });
     return prisma.user.findUnique({
@@ -119,20 +120,35 @@ export class UserService {
 
   async createUser(
     data: CreateUserData,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse> {
-    logger.info("Creating new user", { email: data.email });
-    const hashedPassword = await hash(data.password, 10);
+    logger.info("Creating new user");
+
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: data.email },
+          ...(data.firebaseUid ? [{ firebaseUid: data.firebaseUid }] : []),
+        ],
+      },
+    });
+
+    if (existingUser) {
+      throw new Error("User already exists");
+    }
 
     const user = await prisma.user.create({
       data: {
-        ...data,
-        password: hashedPassword,
+        email: data.email,
+        name: data.name,
+        firebaseUid: data.firebaseUid,
+        ...(data.password ? { password: await hash(data.password, 10) } : {}),
       },
       select: {
         id: true,
         email: true,
         name: true,
+        firebaseUid: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -150,10 +166,83 @@ export class UserService {
     return user;
   }
 
+  async findOrCreateFirebaseUser(
+    firebaseUid: string,
+    email: string,
+    name: string,
+    logger: ILogger = console,
+  ): Promise<UserResponse> {
+    logger.info("Finding or creating Firebase user");
+
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ firebaseUid }, { email }],
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        firebaseUid: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (existingUser) {
+      // If user exists but doesn't have firebaseUid, update it
+      if (!existingUser.firebaseUid) {
+        return await prisma.user.update({
+          where: { id: existingUser.id },
+          data: { firebaseUid },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            firebaseUid: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        });
+      }
+      return existingUser;
+    }
+
+    // Create new user
+    return await this.createUser(
+      {
+        email,
+        name,
+        firebaseUid,
+      },
+      logger,
+    );
+  }
+
+  async getUserByFirebaseUid(
+    firebaseUid: string,
+    logger: ILogger = console,
+  ): Promise<UserResponse | null> {
+    logger.info("Getting user by Firebase UID");
+
+    const user = await prisma.user.findFirst({
+      where: { firebaseUid },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        firebaseUid: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return user;
+  }
+
   async updateUser(
     id: number,
     data: UpdateUserData,
-    logger: ILogger = console
+    logger: ILogger = console,
   ): Promise<UserResponse> {
     logger.info("Updating user", { id });
     return prisma.user.update({

@@ -25,7 +25,7 @@ const userCountKey = generateKey("userCount");
  */
 export const readUsersFromCache = async (
   start: number = 0,
-  end: number = -1
+  end: number = -1,
 ): Promise<Omit<User, "password">[] | null> => {
   const key = usersKey;
 
@@ -67,7 +67,7 @@ export const readUserCountFromCache = async (): Promise<number | null> => {
  * @param users - Array of users to cache
  */
 export const writeUsersToCache = async (
-  users: Omit<User, "password">[]
+  users: Omit<User, "password" | "firebaseUid">[],
 ): Promise<void> => {
   const key = usersKey;
 

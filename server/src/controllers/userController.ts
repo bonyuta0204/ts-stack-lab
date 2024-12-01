@@ -10,7 +10,7 @@ import { ErrorResponse } from "../middleware/errorHandler.js";
 
 export const getUsers = async (
   req: Request,
-  res: Response<PaginatedResponse<UserResponse>>
+  res: Response<PaginatedResponse<UserResponse>>,
 ) => {
   req.logger.info("Getting users list", { query: req.query });
 
@@ -23,7 +23,7 @@ export const getUsers = async (
 
 export const getUser = async (
   req: Request,
-  res: Response<UserResponse | ErrorResponse>
+  res: Response<UserResponse | ErrorResponse>,
 ) => {
   const { id } = req.params;
   req.logger.info("Getting user", { id });
@@ -38,7 +38,7 @@ export const getUser = async (
 
 export const createUser = async (
   req: Request<object, UserResponse, CreateUserData>,
-  res: Response<UserResponse>
+  res: Response<UserResponse>,
 ) => {
   const userData = req.body;
   req.logger.info("Creating user", { email: userData.email });
@@ -49,7 +49,7 @@ export const createUser = async (
 
 export const updateUser = async (
   req: Request<{ id: string }, UserResponse, UpdateUserData>,
-  res: Response<UserResponse>
+  res: Response<UserResponse>,
 ) => {
   const { id } = req.params;
   const userData = req.body;

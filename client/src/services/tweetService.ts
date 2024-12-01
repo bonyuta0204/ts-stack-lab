@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { apiClient } from './apiClient'
 import type { PaginatedResponse } from './types'
 
 export interface Tweet {
@@ -19,40 +19,34 @@ export interface CreateTweetData {
   authorId: number
 }
 
-const API_URL = 'http://localhost:3000/api'
-
 export const tweetService = {
   async getTweets(page = 1, pageSize = 10): Promise<PaginatedResponse<Tweet>> {
-    const response = await axios.get(`${API_URL}/tweets`, {
+    return await apiClient.get<PaginatedResponse<Tweet>>('/tweets', {
       params: { page, pageSize },
     })
-    return response.data
   },
 
   async getTimeline(userId: number, page = 1, pageSize = 10): Promise<PaginatedResponse<Tweet>> {
-    const response = await axios.get(`${API_URL}/tweets/timeline/${userId}`, {
+    return await apiClient.get<PaginatedResponse<Tweet>>(`/tweets/timeline/${userId}`, {
       params: { page, pageSize },
     })
-    return response.data
   },
 
   async getUserTweets(userId: number, page = 1, pageSize = 10): Promise<PaginatedResponse<Tweet>> {
-    const response = await axios.get(`${API_URL}/tweets/user/${userId}`, {
+    return await apiClient.get<PaginatedResponse<Tweet>>(`/tweets/user/${userId}`, {
       params: { page, pageSize },
     })
-    return response.data
   },
 
   async createTweet(data: CreateTweetData): Promise<Tweet> {
-    const response = await axios.post(`${API_URL}/tweets`, data)
-    return response.data
+    return await apiClient.post<Tweet>('/tweets', data)
   },
 
   async followUser(followerId: number, followingId: number): Promise<void> {
-    await axios.post(`${API_URL}/tweets/follow`, { followerId, followingId })
+    await apiClient.post(`/users/${followerId}/follow/${followingId}`, {})
   },
 
   async unfollowUser(followerId: number, followingId: number): Promise<void> {
-    await axios.post(`${API_URL}/tweets/unfollow`, { followerId, followingId })
+    await apiClient.delete(`/users/${followerId}/follow/${followingId}`)
   },
 }

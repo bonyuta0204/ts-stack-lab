@@ -7,6 +7,11 @@ declare global {
   namespace Express {
     interface Request {
       logger: HttpLogger;
+      user?: {
+        id: number;
+        email: string;
+        firebaseUid: string;
+      };
     }
   }
 }

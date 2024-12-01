@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "pnpm --filter server run dev & pnpm --filter client run dev",
     "build": "pnpm --filter client run build && pnpm --filter server run build",
-    "start": "pnpm --filter server run start"
+    "start": "pnpm --filter server run start",
+    "lint": "pnpm --filter \"./client\" --filter \"./server\" run lint",
+    "type-check": "pnpm --filter \"./client\" --filter \"./server\" run type-check",
+    "format": "pnpm --filter \"./client\" --filter \"./server\" run format"
   },
   "keywords": [],
   "author": "",

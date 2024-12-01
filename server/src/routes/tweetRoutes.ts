@@ -8,17 +8,18 @@ import {
   unfollowUser,
 } from "../controllers/tweetController.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
+import { authenticateUser } from "../middleware/auth.js";
 
 const router = Router();
 
-// Tweet routes
+// Public routes
 router.get("/", asyncHandler(getTweets));
-router.get("/timeline/:userId", asyncHandler(getTimeline));
 router.get("/user/:userId", asyncHandler(getUserTweets));
-router.post("/", asyncHandler(createTweet));
 
-// Follow routes
-router.post("/follow", asyncHandler(followUser));
-router.post("/unfollow", asyncHandler(unfollowUser));
+// Protected routes
+router.get("/timeline/:userId", authenticateUser, asyncHandler(getTimeline));
+router.post("/", authenticateUser, asyncHandler(createTweet));
+router.post("/follow", authenticateUser, asyncHandler(followUser));
+router.post("/unfollow", authenticateUser, asyncHandler(unfollowUser));
 
 export default router;
