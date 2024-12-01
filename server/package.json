@@ -11,6 +11,7 @@
     "seed": "ts-node prisma/seed.ts",
     "prisma:generate": "prisma generate",
     "lint": "eslint . --fix",
+    "reset-cache": "ts-node scripts/resetCache.ts",
     "type-check": "tsc --noEmit"
   },
   "keywords": [],

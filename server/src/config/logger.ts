@@ -2,7 +2,11 @@ import winston, { createLogger } from "winston";
 
 const logger = createLogger({
   level: "info",
-  format: winston.format.json(),
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.json(),
+  ),
   transports: [
     //
     // - Write all logs with importance level of `error` or higher to `error.log`
