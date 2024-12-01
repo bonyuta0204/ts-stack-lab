@@ -24,7 +24,9 @@ export async function getUsers(
     const result = await userService.getUsers(page, pageSize, req.logger);
     res.json(result);
   } catch (error) {
-    req.logger.error("Error getting users", { error });
+    if (error instanceof Error) {
+      req.logger.error(error.message);
+    }
     res.status(500).json({ error: "Failed to get users" });
   }
 }

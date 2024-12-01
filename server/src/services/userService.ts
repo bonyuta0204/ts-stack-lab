@@ -116,7 +116,7 @@ export class UserService {
     logger.info("Creating new user", { email: data.email });
     const hashedPassword = await hash(data.password, 10);
 
-    const user = await prisma.user.create({
+    return prisma.user.create({
       data: {
         ...data,
         password: hashedPassword,
@@ -129,8 +129,6 @@ export class UserService {
         updatedAt: true,
       },
     });
-
-    return user;
   }
 
   async updateUser(

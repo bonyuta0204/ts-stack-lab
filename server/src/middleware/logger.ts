@@ -33,9 +33,14 @@ export class HttpLogger implements ILogger {
     this.logger.info(`${this.prefix()} ${message}`, { duration, ...meta });
   }
 
-  error(message: string, meta?: Record<string, unknown>) {
+  error(error: Error): void;
+  error(message: string, meta?: Record<string, unknown>): void;
+  error(info: string | Error, meta?: Record<string, unknown>) {
     const duration = this.duration();
-    this.logger.error(`${this.prefix()} ${message}`, { duration, ...meta });
+    if (info instanceof Error) {
+      this.logger.error(info);
+    }
+    this.logger.error(`${this.prefix()} ${info}`, { duration, ...meta });
   }
 
   warn(message: string, meta?: Record<string, unknown>) {
