@@ -14,10 +14,10 @@ export type UserResponse = Omit<User, "password" | "firebaseUid">;
 
 export interface PaginatedResponse<T> {
   items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  pagination: {
+    current_page: number;
+    max_page: number;
+  };
 }
 
 export interface CreateUserData {
@@ -48,10 +48,10 @@ export class UserService {
       logger.info("Fetched users from cache");
       return {
         items: cachedUsers,
-        total: cachedUserCount,
-        page,
-        pageSize,
-        totalPages: Math.ceil(cachedUserCount / pageSize), // cachedUserCount / pageSize,
+        pagination: {
+          current_page: page,
+          max_page: Math.ceil(cachedUserCount / pageSize),
+        },
       };
     }
 
@@ -94,10 +94,10 @@ export class UserService {
 
     return {
       items: users,
-      total,
-      page,
-      pageSize,
-      totalPages,
+      pagination: {
+        current_page: page,
+        max_page: totalPages,
+      },
     };
   }
 
