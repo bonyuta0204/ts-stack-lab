@@ -5,24 +5,14 @@ import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
 } from '@tanstack/vue-query'
-import { Ref } from 'vue'
 
-/**
- * Function signature for page-based fetchers.
- */
-type PageFetchFunction<TItem extends object> = (param: {
-  page: number
-}) => Promise<{ items: TItem[]; pagination: { current_page: number; max_page: number } }>
-
-// declare function useInfiniteQuery<TQueryFnData, TError = DefaultError, TData = InfiniteData<TQueryFnData>, TQueryKey extends QueryKey = QueryKey, TPageParam = unknown>(options: UseInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryFnData, TQueryKey, TPageParam>, queryClient?: QueryClient): UseInfiniteQueryReturnType<TData, TError>;
-
-type PageResponse<TItem extends object> = {
+type PageResponse<TItem> = {
   items: TItem[]
   pagination: { current_page: number; max_page: number }
 }
 
 export const useInfinitePageQuery = <
-  TItem extends object,
+  TItem,
   TError = DefaultError,
   TQueryKey extends QueryKey = QueryKey,
 >(
