@@ -7,10 +7,10 @@ export type TweetResponse = Tweet;
 
 export interface PaginatedResponse<T> {
   items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  pagination: {
+    current_page: number;
+    max_page: number;
+  };
 }
 
 export interface CreateTweetData {
@@ -49,10 +49,10 @@ class TweetService {
 
     return {
       items: tweets,
-      total,
-      page,
-      pageSize,
-      totalPages,
+      pagination: {
+        current_page: page,
+        max_page: totalPages,
+      },
     };
   }
 
@@ -108,10 +108,10 @@ class TweetService {
 
     return {
       items: tweets,
-      total,
-      page,
-      pageSize,
-      totalPages,
+      pagination: {
+        current_page: page,
+        max_page: totalPages,
+      },
     };
   }
 
@@ -149,10 +149,10 @@ class TweetService {
 
     return {
       items: tweets,
-      total,
-      page,
-      pageSize,
-      totalPages,
+      pagination: {
+        current_page: page,
+        max_page: totalPages,
+      },
     };
   }
 
