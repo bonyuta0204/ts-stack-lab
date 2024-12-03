@@ -48,22 +48,18 @@
 </template>
 
 <script setup lang="ts">
-  import { useInfiniteQuery } from '@tanstack/vue-query'
   import { getUsers } from '../services/api'
   import { computed } from 'vue'
+  import { useInfinitePageQuery } from '../composables/useInfinitePage'
 
   const {
     data: userResponse,
     fetchNextPage,
     isLoading,
     error,
-  } = useInfiniteQuery({
+  } = useInfinitePageQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
-    initialPageParam: 1,
-    getNextPageParam: (_, pages) => {
-      return pages.length + 1
-    },
   })
 
   function fetchUsers({ pageParam = 1 }) {
